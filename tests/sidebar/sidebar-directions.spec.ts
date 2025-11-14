@@ -18,7 +18,6 @@ test.describe('Sidebar Directions', () => {
     await page.goto(BASE, { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('networkidle').catch(()=>{});
 
-    // 0) 이미 From/To가 보이면 바로 확인
     const fromCandidates = [
       page.getByPlaceholder(/From|Start|Origin/i).first(),
       page.getByRole('textbox', { name: /From|Start|Origin/i }).first(),
@@ -35,7 +34,6 @@ test.describe('Sidebar Directions', () => {
     const anyTo   = async () => await visible(toCandidates[0])   || await visible(toCandidates[1])   || await visible(toCandidates[2]);
 
     if (!(await anyFrom()) || !(await anyTo())) {
-      // 1) Directions 열기 시도: 버튼/텍스트/아이콘/title/aria-label 모두 커버
       const openTries = [
         page.getByRole('button', { name: /Directions|Route|Routing|Navigate/i }),
         page.getByText(/^\s*Directions\s*$/i),
@@ -45,7 +43,6 @@ test.describe('Sidebar Directions', () => {
 
       let opened = await clickFirstAvailable(page, openTries);
       if (!opened) {
-        // 2) 메뉴(햄버거/옵션) 열고 다시 시도
         const menuTries = [
           page.getByRole('button', { name: /Menu|Open menu|Options|More/i }),
           page.locator('[aria-label*="menu" i],[aria-label*="options" i],[title*="menu" i]').first(),
@@ -55,11 +52,9 @@ test.describe('Sidebar Directions', () => {
         opened = await clickFirstAvailable(page, openTries);
       }
 
-      // 3) 약간 대기 후 입력칸 재확인
       await page.waitForTimeout(500);
     }
 
-    // 4) 최종적으로 From/To 중 하나 이상씩 보이는지 확인 (둘 다 강하게 기대)
     const from =
       (await fromCandidates[0].count()) ? fromCandidates[0] :
       (await fromCandidates[1].count()) ? fromCandidates[1] : fromCandidates[2];
