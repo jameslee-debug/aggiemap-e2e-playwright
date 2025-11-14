@@ -9,7 +9,6 @@ test.describe('Map Canvas & Interactions', () => {
     const canvas = page.locator('canvas, .maplibregl-canvas, .mapboxgl-canvas, .leaflet-canvas').first();
     await expect(canvas).toBeVisible({ timeout: 15000 });
 
-    // 확대: 버튼이 있으면 클릭, 없으면 키보드 '+'
     const zoomIn = page.getByRole('button', { name: /Zoom in|\+/i })
                     .or(page.locator('button:has-text("+")')).first();
     if (await zoomIn.count()) await zoomIn.click();
